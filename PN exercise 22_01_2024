@@ -1,0 +1,57 @@
+-- DDL Commands:
+create database schooldb;
+
+-- Design and create a table named "Students" with the following columns:
+-- student_id (Primary Key) student_name classroom_id (Foreign Key referencing classroom_id in the "Classrooms" table) grade
+
+create table teachers(teacher_id int primary key, teacher_name varchar(100), subject varchar(60));
+create table classrooms(classroom_id serial primary key, classroom_name varchar(100), teacher_id int,
+					   constraint teacher_id foreign key (teacher_id) references teachers(teacher_id));
+create table students(student_id serial primary key, firstname varchar(50), lastname varchar(50), classroom_id int
+					 , constraint classroom_id foreign key (classroom_id) references classrooms(classroom_id));
+
+-- Add a new column named "Gender" (VARCHAR, Maximum 10 characters) to the "Students" table.
+alter table students add column gender varchar(10);
+alter table students add column age int;
+
+-- DML Commands:
+insert into teachers(teacher_id, teacher_name, subject)
+values(1001,'Thomas Muller', 'Math'),(1002,'Susanne Deutch', 'Germany'), (1003,'Peter Java', 'Programming'),
+	  (1004, 'Adolf Chemistry', 'Chemistry'), (1005, 'Abel Geography', 'Geography'), (1006, 'Manuel History', 'History');
+
+insert into classrooms(classroom_name, teacher_id)
+values('Class 1', 1001), ('Class 2', 1002), ('Class 3', 1003), ('Class 4', 1004), ('Class 5', 1005),
+	  ('Class 6', 1006), ('Class 7', 1001),('Class 8', 1002);
+
+insert into students(firstname, lastname, classroom_id, gender, age)
+values ('John','Meyer', 1, 'Male', 10),('Maya','Smith', 1, 'Female', 11),('Bob','Spencer', 1, 'Male', 12),
+	   ('Maria','Chen', 2, 'Female', 10), ('Susi','Parker', 2, 'Male', 13), ('Anthony','Bear', 3, 'Male', 15);
+
+-- Task: Update the "Age" of students who are in the "Class" 10 to 16.
+update students set age = 16 where age = 10;
+
+-- Task: Delete all records of students whose "Age" is less than 10.
+delete from students where age < 10;
+
+-- DQL Command:
+-- Write a SELECT query to retrieve the "FirstName," "LastName," and "Age" of all students in the "SchoolDB."
+select firstname, lastname, age from students;
+
+-- Define Primary Key:
+-- The primary key in SQL is a single, or a group of fields or columns that can uniquely identify a row in a table.
+-- Putting it simply, it is a column that accepts unique values for each row.
+-- Primary keys must contain UNIQUE values, and cannot contain NULL values.
+
+-- Task: Create a new table named "Courses" with columns: "CourseID" (Integer, Primary Key) and "CourseName" (VARCHAR, Maximum 50 characters).
+-- Then, add a foreign key constraint in the "Students" table referencing the "CourseID" in the "Courses" table.
+create table courses(course_id int primary key, course_name varchar(50));
+
+alter table students add column course_id int;
+alter table students add constraint course_id foreign key (course_id) references courses(course_id);
+
+select * from students;
+
+-- List all students with their respective classrooms and teacher names.
+select s.firstname, s.lastname, c.classroom_name, t.teacher_name, t.subject
+from ((students s join classrooms c on s.classroom_id = c.classroom_id) 
+	  join teachers t on c.teacher_id = t.teacher_id); 
